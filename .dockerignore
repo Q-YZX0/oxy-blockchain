@@ -1,0 +1,52 @@
+# .dockerignore para Oxy•gen Blockchain
+
+# Binarios
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Directorios de datos
+data/
+*.db
+
+# Archivos de desarrollo
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Tests
+*_test.go
+test/
+tests/
+
+# Documentación
+docs/
+*.md
+!README.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Archivos temporales
+tmp/
+temp/
+*.log
+*.tmp
+
+# Node modules (si hay alguna carpeta node_modules)
+node_modules/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+

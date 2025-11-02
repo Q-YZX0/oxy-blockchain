@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Nodo Blockchain 1
+  oxy-blockchain-node1:
+    build:
+      context: ./go
+      dockerfile: ../Dockerfile
+    container_name: oxy-blockchain-node1
+    environment:
+      - OXY_DATA_DIR=/app/data
+      - OXY_CHAIN_ID=oxy-gen-chain
+      - OXY_LOG_LEVEL=info
+      - OXY_LOG_JSON=false
+      - OXY_MESH_ENDPOINT=ws://oxy-mesh:3001
+      - BLOCKCHAIN_API_ENABLED=true
+      - BLOCKCHAIN_API_HOST=0.0.0.0
+      - BLOCKCHAIN_API_PORT=8080
+      - OXY_VALIDATOR_ADDR=${VALIDATOR_ADDR_1:-}
+      - OXY_VALIDATOR_KEY=${VALIDATOR_KEY_1:-}
+    ports:
+      - "8080:8080"
+    volumes:
+      - node1-data:/app/data
+    networks:
+      - oxy-mesh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nodo Blockchain 2 (opcional para testing)
+  oxy-blockchain-node2:
+    build:
+      context: ./go
+      dockerfile: ../Dockerfile
+    container_name: oxy-blockchain-node2
+    environment:
+      - OXY_DATA_DIR=/app/data
+      - OXY_CHAIN_ID=oxy-gen-chain
+      - OXY_LOG_LEVEL=info
+      - OXY_LOG_JSON=false
+      - OXY_MESH_ENDPOINT=ws://oxy-mesh:3001
+      - BLOCKCHAIN_API_ENABLED=true
+      - BLOCKCHAIN_API_HOST=0.0.0.0
+      - BLOCKCHAIN_API_PORT=8080
+      - OXY_VALIDATOR_ADDR=${VALIDATOR_ADDR_2:-}
+      - OXY_VALIDATOR_KEY=${VALIDATOR_KEY_2:-}
+    ports:
+      - "8081:8080"
+    volumes:
+      - node2-data:/app/data
+    networks:
+      - oxy-mesh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - testing
+
+  # Servidor Mesh (oxygen-sdk)
+  oxy-mesh:
+    image: node:18-alpine
+    container_name: oxy-mesh
+    working_dir: /app
+    command: sh -c "npm install -g @oxygen/sdk && node -e 'console.log(\"Mesh server placeholder\")' || sleep infinity"
+    ports:
+      - "3001:3001"
+    networks:
+      - oxy-mesh
+    restart: unless-stopped
+    # TODO: Configurar mesh server real cuando esté disponible
+
+volumes:
+  node1-data:
+    driver: local
+  node2-data:
+    driver: local
+
+networks:
+  oxy-mesh:
+    driver: bridge
+

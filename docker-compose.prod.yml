@@ -1,0 +1,43 @@
+version: '3.8'
+
+# Configuración de producción para Oxy•gen Blockchain
+# Uso: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  oxy-blockchain:
+    build:
+      context: ./go
+      dockerfile: ../Dockerfile
+    container_name: oxy-blockchain-prod
+    environment:
+      - OXY_DATA_DIR=/app/data
+      - OXY_CHAIN_ID=${OXY_CHAIN_ID:-oxy-gen-chain}
+      - OXY_LOG_LEVEL=${OXY_LOG_LEVEL:-info}
+      - OXY_LOG_JSON=${OXY_LOG_JSON:-true}
+      - OXY_MESH_ENDPOINT=${OXY_MESH_ENDPOINT:-ws://localhost:3001}
+      - BLOCKCHAIN_API_ENABLED=${BLOCKCHAIN_API_ENABLED:-true}
+      - BLOCKCHAIN_API_HOST=${BLOCKCHAIN_API_HOST:-localhost}
+      - BLOCKCHAIN_API_PORT=${BLOCKCHAIN_API_PORT:-8080}
+      - OXY_VALIDATOR_ADDR=${OXY_VALIDATOR_ADDR}
+      - OXY_VALIDATOR_KEY=${OXY_VALIDATOR_KEY}
+    ports:
+      - "${BLOCKCHAIN_API_PORT:-8080}:8080"
+    volumes:
+      - blockchain-data:/app/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  blockchain-data:
+    driver: local
+
