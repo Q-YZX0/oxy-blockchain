@@ -2,6 +2,8 @@
 
 Oxy•gen is a native blockchain designed to run on physical nodes and mesh networks disconnected from the public Internet. Its goal is to provide reliable execution and settlement infrastructure in environments with intermittent or no connectivity, enabling community-driven, resilient, and low-infrastructure use cases.
 
+this repo is deprecated only for routing this is the new repo -> https://github.com/Q-arz/OXG-Blockchain
+
 ## What was it designed for?
 
 - Offline continuity: nodes communicate over WiFi/LoRa links in a mesh topology.
